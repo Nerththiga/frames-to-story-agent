@@ -15,7 +15,7 @@ This repository takes a **directory path as input**, which should contain images
 - **API_KEY**: You will need an API key from Google AI Studio to run the agent. Get a free API key from [AI Studio](https://aistudio.google.com/app/apikey) and add it in the .env file
 
 
-## ⚙️ Installation
+## Installation
 
 Clone the repository:
 
@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ```
 
 
-## 🔧 Usage
+## Usage
 
 To run the agent with a specific directory of images:
 
@@ -42,7 +42,7 @@ python main.py /path/to/images
 If no directory path is provided, the agent will use the path defined in the `.env` file.
 
 
-## 📁 Project Structure
+## Project Structure
 
 - `frames2story_agent.py`: Core workflow definition.
 - `llm_client.py`: Interface for interacting with language models.
