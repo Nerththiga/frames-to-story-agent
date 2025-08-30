@@ -38,35 +38,47 @@ def get_metadata(state):
     ims = sorted(os.listdir(dir_path))
     print(f"Image list: {ims}")
 
-    for im in ims:
-        img_path = os.path.join(dir_path, im)
-        print(f"Processing: {img_path}")
-        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        
-        prompt = f"""
-        Your task is to extract key characters/objects and describe the scene event in one line from the given image.
-        "frame_id": "{im}",
-        "timestamp": "{timestamp}"
-        """
+    try:
+        for im in ims:
+            img_path = os.path.join(dir_path, im)
 
-        with open(img_path, 'rb') as f:
-            img2_bytes = f.read()
+            if not os.path.isfile(img_path):
+                print(f"Skipping non-file: {img_path}")
+                continue
 
-        contents = [
-            prompt,
-            types.Part.from_bytes(
-                data=img2_bytes,
-                mime_type='image/png'
-            )
-        ]
-        
-        metadata = get_response(contents, scene_metadata_schema)
-        metadata_list.append(metadata)
+            print(f"Processing: {img_path}")
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+            prompt = f"""
+            Your task is to extract key characters/objects and describe the scene event in one line from the given image.
+            "frame_id": "{im}",
+            "timestamp": "{timestamp}"
+            """
 
-    metadata_json = f"metadata\{os.path.basename(os.path.normpath(dir_path))}.json"
-    with open(metadata_json, 'w') as f:
-        json.dump(metadata_list, f, indent=2)
+            with open(img_path, 'rb') as f:
+                img2_bytes = f.read()
 
-    return {"metadata": metadata_list}
+            contents = [
+                prompt,
+                types.Part.from_bytes(
+                    data=img2_bytes,
+                    mime_type='image/png'
+                )
+            ]
+            
+            metadata = get_response(contents, scene_metadata_schema)
+            metadata_list.append(metadata)
+
+        if not metadata_list:
+            raise ValueError(f"No metadata was extracted from directory '{dir_path}'. Please check your images/ model response")
+
+        metadata_json = f"metadata\{os.path.basename(os.path.normpath(dir_path))}.json"
+        with open(metadata_json, 'w') as f:
+            json.dump(metadata_list, f, indent=2)
+
+        return {"metadata": metadata_list}
+
+    except Exception as e:
+        raise e
 
 # get_metadata(DIR_PATH)

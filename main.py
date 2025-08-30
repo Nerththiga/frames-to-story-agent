@@ -11,6 +11,15 @@ def run_agent(dir_path):
     frames2story_agent.invoke(initial_state)
 
 if __name__ == "__main__":
-    print(os.getenv("DIR_PATH"))
     dir_path = sys.argv[1] if len(sys.argv) > 1 else os.getenv("DIR_PATH")
-    run_agent(dir_path)
+
+    if not dir_path:
+        raise ValueError("No directory path provided. Please pass as argument or define DIR_PATH in .env.")
+    
+    if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
+        raise FileNotFoundError(f"The directory path '{dir_path}' does not exist or is not a directory.")
+    
+    try:
+        run_agent(dir_path)
+    except Exception as e:
+        raise e
